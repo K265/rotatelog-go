@@ -15,10 +15,11 @@ import (
  
 func init() {
 	w := daily.New(
-		"/var/log/server.",  // prefix
-		".log", // extension
-		30,     // keep days
-		100*1024*1024 // maximum size
+		"/var/log/server.", // prefix
+		".log",             // extension
+		30,                 // keep days
+		100*1024*1024,      // maximum size
+        nil                 // notifier.OnOpenFile(file *os.File) will be called when opened new file
 	)
 	logrus.SetOutput(w)
 }

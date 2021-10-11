@@ -22,15 +22,17 @@ type HandlerImpl struct {
 	MaxIndex     int
 	index        int
 	lastBasename string
+	notifier     rotatelog.Notifier
 }
 
-func New(prefix string, ext string, keepDays int, maxSize int64) *rotatelog.Writer {
+func New(prefix string, ext string, keepDays int, maxSize int64, notifier rotatelog.Notifier) *rotatelog.Writer {
 	h := &HandlerImpl{
 		Prefix:   prefix,
 		Ext:      ext,
 		KeepDays: keepDays,
 		MaxSize:  maxSize,
 		MaxIndex: 1000,
+		notifier: notifier,
 	}
 
 	return rotatelog.New(h)
@@ -96,5 +98,11 @@ func (h *HandlerImpl) Prune(now time.Time) {
 			_ = os.Remove(path.Join(dir, filename))
 		}
 
+	}
+}
+
+func (h *HandlerImpl) OnOpenFile(file *os.File) {
+	if h.notifier != nil {
+		h.notifier.OnOpenFile(file)
 	}
 }
